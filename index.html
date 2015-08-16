@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="description" content="" />
+	<title>chrome extention</title>
+	<link rel="stylesheet" href="assets/css/index.css">
+</head>
+<body>
+	<header>
+		<h1>javascript is all</h1>
+		<div id="test" class='test0 tt'></div>
+	</header>	
+	<nav>
+		    <ul id='historyc' >
+        <li id='history_app'>app
+            <ul>
+              <li id='getSelector'>
+                <ul  class='history_method_values'>
+                  document.getElementByTagsName;
+                </ul>
+              </li>
+            </ul>
+            <span class='nb'>1</span>
+        </li>
+        <li id='history_window'>Window
+            <ul>
+              <li>dez
+                <ul  class='history_method_values'>de
+                </ul>
+              </li>
+            </ul>
+        </li>
+        <li id='history_document'>document
+            <ul>
+              <li>
+                <ul  class='history_method_values'>
+                </ul>
+              </li>
+            </ul>
+        </li>
+    </ul>
+	</nav>
+	<section>
+	   <form action="" method='POST'>
+      	<textarea name="jquery" id="text_jqu" cols="60" rows="20" placeholder='              Place your jquery code here'></textarea>
+      	<button id="submit">j2j</button>
+      	<textarea name="javascript" id="text_jav" cols="60" rows="20" placeholder='Get your javacript code here'></textarea>
+    </form>
+	</section>
+	<footer>
+		<ul>
+			<li><a href="">copyright</a></li>
+			<li><a href="https://github.com/karim1412/j2j.git">github</a></li>
+		</ul>
+	</footer>
+</body>
+<script type="text/javascript" src="assets/js/jquery.min.js"></script>
+<script src="assets/js/app.js"></script>
+<script src='assets/js/exception.js'></script>
+<script src='assets/js/methods/css/css.js'></script>
+<script src='assets/js/methods/css/addClass.js'></script>
+<script type="text/javascript">
+	  // initialise the aplication
+	   var code     = '',
+      text_jqu     = document.getElementById('text_jqu'),
+      text_jav     = document.getElementById('text_jav'),
+      submit       = document.getElementById('submit'),
+      test         = document.getElementById('test'),
+      jquSize      = '',
+      javSize;
+
+      app.init();
+      app.autoload('removeClass');
+
+      window.alert = function(param){return console.log('alert => '+param);};
+
+      
+
+      submit.onclick = function(e){
+        e.preventDefault();
+        app.resetAll();  
+        code = text_jqu.value;
+
+       
+        app.getDeclaredVariables(code);
+        app.getString();
+        jquSize = String(code).length;
+
+      };
+
+      $('#test').removeClass('tr gg g ed');
+
+      // app.getString();
+
+      // var pp = $('#test'); 
+	
+</script>
+</html>
