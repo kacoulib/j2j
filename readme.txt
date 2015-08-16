@@ -1,1 +1,1 @@
-conver jquery to javascript
+convert jquery to javascript
