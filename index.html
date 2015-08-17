@@ -71,7 +71,6 @@
       javSize;
 
       app.init();
-      app.autoload('removeClass');
 
       window.alert = function(param){return console.log('alert => '+param);};
 
@@ -82,6 +81,7 @@
         app.resetAll();  
         code = text_jqu.value;
 
+      	app.preLoad(code);
        
         app.getDeclaredVariables(code);
         app.getString();
@@ -89,7 +89,7 @@
 
       };
 
-      $('#test').removeClass('tr gg g ed');
+      // $('#test').removeClass('tr gg g ed');
 
       // app.getString();
 

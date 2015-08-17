@@ -1,6 +1,7 @@
 (function(ctx){
 
 	var css = function(s,a,b){
+		console.log(s,a,b);
 		var txt = '', name, s, val,
 			// selector = ctx.getSelector('this.selector'),
 			browser  = ctx.getBrowserInfo();
