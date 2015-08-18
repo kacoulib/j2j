@@ -213,12 +213,12 @@ var app = {
 	 * @brief Description : find all proprety, method in the converting script that have to be autoload
 	*/
 	preLoad : function(file){
-
+		console.log('preload');
 		for (var key in this.implemant) {
 
 			if (file.indexOf('.'+key) >= 0 && this.toLoad.indexOf(key) < 0) {
 				this.toLoad.push(key);
-		console.log(file.indexOf('.'+key) );
+				this.autoload(key);
 			};
 		};
 	
