@@ -123,16 +123,14 @@ var app = {
 	getDeclaredVariables : function(code){
 		var rgxMatch, rgxNoExtra = [], rgxfinal;
 		rgxMatch = code.match(/var (.*);/g); // extract all declaration variables   ex: var t = 0, p, ii = 1;
+		console.log(rgxMatch)
 		
 		if (rgxMatch != null) {
 
 	        for (var k = 0; k < rgxMatch.length; k++) {
-	           rgxNoExtra.push(rgxMatch[k].split(/[;,var]/g)); // remove at all ;,var
+	           rgxNoExtra.push(rgxMatch[k].split(/(var(\s))|([,;])/g)); // remove at all ;,var
 	        }; 
-	        console.log(rgxMatch);
-	        console.log(rgxNoExtra);
 	        for (var i = 0; i< rgxNoExtra.length; i++) {
-
 	            for (var j = 0; j < rgxNoExtra[i].length; j++) {
 	             
 	              if (typeof rgxNoExtra[i][j] !== 'undefined' && rgxNoExtra[i][j] !== '' && rgxNoExtra[i][j] !== ' ') { // if it's not empty or undefined or just a space
@@ -141,6 +139,7 @@ var app = {
 	              }
 	            };
 	        };
+	        console.log(rgxfinal);
 
 		};
 		console.log('getDeclaredVariables ');
@@ -156,20 +155,19 @@ var app = {
 	 * @var return (obj) : {selctor, length, type} 
    	*/
 	getSelector : function(selec){
-
+		console.log(selec);
 		selec = selec.split('$(');
 		selec = selec[1].split(')');
-		selec = selec[0];
-		var s 		 		= /[:*,>+~\[=$^]/.test(selec),
-			s 				= (s == true ? s : selec.split(1)), 
+		selec = selec[0]+'';
+		var s 		 		= /[:*,>+~\[=$^]/.test(selec);
+			s 				= (s == true ? s : (/(\S)+(\s)+(\S)/.test(selec)?true:selec[1]));
 			name 	 		= selec.slice(1),
 			selector 		= '',
 			selectorLength  = 0,
 			type 			= ''; 
 
+console.log('name='+selec)
 		selector = 'document.';
-
-		console.log('getSelector: '+selec);
 
 		if (s === true) {// if it's a css query ex p:first || p > .test 
 			type = 'tag';
@@ -178,11 +176,12 @@ var app = {
 		}; 
 		
 		if (s === '#') {
-			selector 	   += "getElementById("+name+")";
+			
+			selector 	   += "getElementById('"+name.slice(1)+"')";
 			type = 'id';
 
 		}else if( s == '.'){
-			selector 	   += "getElementsByClassName("+name+")";
+			selector 	   += "getElementsByClassName("+name.slice(1)+")";
 			type = 'class';
 		
 		}else{
@@ -228,7 +227,6 @@ var app = {
 	 * @brief Description : reset variblable that should be declared only in app
 
 	*/
-
 	resetAll : function(){
 		this.toLoad = [];
 		this.declaredVar = [];
