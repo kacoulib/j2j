@@ -16,8 +16,14 @@ var app = {
 	toLoad		 : [],
 	fileLoaded		 : [],
 
-	init : function(){
-		this.css = this.css;
+	init : function(code){
+		this.resetAll(); // reset all properties  
+      	this.preLoad(code); // load all required files
+        this.scope(code,0,'removeClass');
+        this.getDeclaredVariables(code); // extract all variables
+        this.convert(code); // convert all jquery code to js
+
+        return this.getString();
 	},
 
 
@@ -50,6 +56,17 @@ var app = {
 			console.log('erreur <strong>'+file+'</strong> a deja été implemanté');
 			return false;
 		}
+	},
+
+	/** 
+	 * @brief Description : convert the jquery script
+
+	*/
+	convert : function(code){
+		this.declaredVar = [];
+		for (var i = 0; i < this.declaredVar.length; i++) {
+		};
+			console.log('convert');
 	},
 
 	formate : function(code){ // 
@@ -287,19 +304,21 @@ console.log('name='+selec)
 	 * @param start  (int) : the indexof to start ex:  code.indexOf('$("#test").addClass')
 	 * @param method  (str) : the name of the method ex(addClass) 
     */
-	scope : function(start,method){
+	scope : function(code,start,method){
 
-		console.log('scope: '+start+method);
+		console.log('scope: '+start);
 		var rgx = new RegExp('\\$\\(.+\\).'+method);
-		code = code.substring(start,code.length-1);
-		splitStart = code.match(rgx); // code :  le code a testé ex: $('test').addclass(fucntion(){}); (function(){})();
+		code = code.substring(start);
+		var allSplit, i, bracketOpen, bracketClose,
+			splitStart = code.match(rgx); // code :  le code a testé ex: $('test').addclass(fucntion(){}); (function(){})();
 
-		if(splitStart == null){return;}
+		if(splitStart == null) return;
 
 		splitStart = code.indexOf('.'+method);
 		allSplit = code.split(''); // decouper chaque caracter du code
 
-		for (var i = splitStart; i < allSplit.length; i++) {
+		console.log(splitStart);
+		for (i = splitStart; i < allSplit.length; i++) {
 
 		if (allSplit[i] == '(') {
 		 	bracketOpen++;
@@ -312,7 +331,7 @@ console.log('name='+selec)
 		if (bracketOpen ==  bracketClose) {
 		 splitStart = i;
 		 console.log(splitStart +'!='+ code.length)
-		 return code.substring(code,i+1);
+		 return {'selec':selec , 'code' : code.substring(code,i+1), 'i' : i+1};
 		};
 
 		};

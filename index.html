@@ -71,7 +71,6 @@
       jquSize      = '',
       javSize;
 
-      app.init();
 
       window.alert = function(param){return console.log('alert => '+param);};
 
@@ -79,13 +78,10 @@
 
       submit.onclick = function(e){
         e.preventDefault();
-        app.resetAll();  
         code = text_jqu.value;
-
-      	app.preLoad(code);
-       
-        app.getDeclaredVariables(code);
-        app.getString();
+        
+        var result = app.init(code);
+        console.log(result);
         jquSize = String(code).length;
 
       };
