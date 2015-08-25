@@ -100,34 +100,34 @@ var app = {
 	* @brief Description : get the browser information
 	*/
 	getBrowserInfo : function(){
-		var browser = $.browser, 
-		 	version = browser['version'];
+		// var browser = $.browser, 
+		//  	version = browser['version'];
 		
-		if ('chrome' in browser || 'webkit' in browser) {
-			browser = 'webkit'; // if chrome
+		// if ('chrome' in browser || 'webkit' in browser) {
+		// 	browser = 'webkit'; // if chrome
 
-		}else if('mozilla' in browser){
+		// }else if('mozilla' in browser){
 			
-			if (version >= 13) {
-				browser = 'moz'; // if mozilla
+		// 	if (version >= 13) {
+		// 		browser = 'moz'; // if mozilla
 
-			}else if(version <= 12 && version >=10){
-				browser = 'noPrefix'; // if ie >=10
+		// 	}else if(version <= 12 && version >=10){
+		// 		browser = 'noPrefix'; // if ie >=10
 
-			}else{
-				browser = 'ms'; // if ie <=10
+		// 	}else{
+		// 		browser = 'ms'; // if ie <=10
 
-			}
+		// 	}
 
-		}else{
-			browser = 'noPrefix';
+		// }else{
+		// 	browser = 'noPrefix';
 
-		}
+		// }
 
-		console.log('getBrowserInfo');
+		// console.log('getBrowserInfo');
 
 
-		return {'name' : browser, 'version' : version};
+		// return {'name' : browser, 'version' : version};
 	},
 
 	/** 
@@ -283,20 +283,20 @@ console.log('name='+selec)
 	 note 	 : create a list of element. if the name already  exist just create the value in the name.
    */
 	setHistoric : function (p,n,v){//(parent,name,value)
-		var id, name, result;
+		// var id, name, result;
 		
-		p = '#history_'+p+' ul';
-		id = n.split(' ');
-		id = id.join('_');
+		// p = '#history_'+p+' ul';
+		// id = n.split(' ');
+		// id = id.join('_');
 
-		console.log('setHistoric: '+p+n+v);
-		if ($(p).children('#'+id).length == 0) {// if the name don't exist 
-			$(p).append('<li id='+id+'>'+n+'<ul><li>'+v+'</ul></li></li>');
-			return;
+		// console.log('setHistoric: '+p+n+v);
+		// if ($(p).children('#'+id).length == 0) {// if the name don't exist 
+		// 	$(p).append('<li id='+id+'>'+n+'<ul><li>'+v+'</ul></li></li>');
+		// 	return;
 		
-		}else{
-			$('#'+id+' ul').append('<li>'+v+'</li>');
-		}
+		// }else{
+		// 	$('#'+id+' ul').append('<li>'+v+'</li>');
+		// }
 	}, 
 
 	/** 

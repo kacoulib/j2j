@@ -5,7 +5,7 @@
 	*@param b: value
 	*/
 	var removeClass = function(s,a,b){
-
+		console.log(s);
 		var txt = '', name, s, val,
 			browser  = app.getBrowserInfo(),		
 			selector = app.getSelector(s);
@@ -52,7 +52,8 @@
 		};
 
 		app.toString += txt + "\r";
-		return this;
+		console.log(txt);
+		return txt;
 	};
 
 	ctx.removeClass = removeClass;
