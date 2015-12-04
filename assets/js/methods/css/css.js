@@ -1,14 +1,15 @@
-(function(ctx){
-
-	var css = function(s,a,b){
+(function(ctx)
+{
+	var css = function (s,a,b)
+	{
 		console.log(s,a,b);
 		var txt = '', name, s, val,
 			// selector = ctx.getSelector('this.selector'),
 			browser  = ctx.getBrowserInfo();
 
 		// define the black lists
-		this.blackList = function(selector,a){
-
+		this.blackList = function (selector,a)
+		{
 			var b = {
 				'display'			: selector.selector+'.style.currentStyle ? '+selector.selector+'.style.currentStyle.display : getComputedStyle('+selector.selector+', null).display;',
 				'width'   			: selector.selector+'.offsetWidth',
@@ -23,7 +24,8 @@
 						'textOrientation','boxDecorationBreak','flex','order'],
 			cup = a.charAt(0).toUpperCase();
 				
-			if (prefix.indexOf(a) >= 0) {
+			if (prefix.indexOf(a) >= 0)
+			{
 				return (browser.name != 'noPrefix') ? '"'+a+' => "+'+selector.selector+'.'+browser.name+cup+a.substr(1)+'+" "+' : '+" '+a+' => "+'+selector.selector+'.'+a+'+" "+';
 			};
 
@@ -33,24 +35,28 @@
 		// if it's a function 
 		// ex : selector.css('width','100px');
 
-		if (typeof a == 'string') {
+		if (typeof a == 'string')
+		{
 			a  = ctx.setDashUcfirst(a);
 			val = b;
 			txt = s+'.style.'+a+' = "'+val+'";';
 
 			// if the second param is a function 
 			// ex : selector.css('width',function(){});
-			if (typeof b == 'function') {
+			if (typeof b == 'function')
+			{
 				txt = selector.selector+'.style.'+a+' = "'+val()+'";';
 			};
 
 			// if it return the css value
 			// ex: selector.css('width');
-			if(typeof b == 'undefined'){
+			if (typeof b == 'undefined')
+			{
 				selector = 'window.getComputedStyle('+selector+',null)';
 				txt      = selector+'.'+a;
 
-				if(this.blackList(selector,a)){
+				if (this.blackList(selector,a))
+				{
 					txt = this.blackList(selector,a);
 				}
 			} 
@@ -60,23 +66,28 @@
 		// ex : selector.css({'width':'100px'});
 		var key,
 			type;
-		if (typeof a == 'object') {
-
-			for(key in a){
+		if (typeof a == 'object')
+		{
+			for (key in a)
+			{
 				val = a[key];
 
-				if (key) {
+				if (key)
+				{
 					key = ctx.setDashUcfirst(key);
 				};
 		
 				// if it's an array 
 				// ex : selector.css(['width','height','opacity']);
 				type = parseInt(key);
-		console.log('txt = '+type);
-				if (type >= 0) {
+				console.log('txt = '+type);
+				if (type >= 0)
+				{
 					txt += 'window.getComputedStyle('+selector.selector+',null)'+'.'+val+';';
 
-				}else{
+				}
+				else
+				{
 					// select the good quote
 					// ex 'url('img.png')' => 'url("img.png")'
 					txt += (val.indexOf('"') >= 0)? txt = selector.selector+".style."+key+" = '"+val+"';" : txt = selector.selector+".style."+key+' = "'+val+'";';
@@ -92,5 +103,3 @@
 	ctx.css = css;
 
 })(app);
-
-
