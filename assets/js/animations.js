@@ -6,9 +6,9 @@
 		(function(i){
 			logs[i].addEventListener('click',function(){
 				if(last != null){
-					logs[last].querySelector('ul').style.display = 'none'
-					logs[last].style.backgroundColor = 'inherit'
-					logs[last].querySelector('ul').style.backgroundColor = 'inherit'
+					logs[last].querySelector('ul').style.display = 'none';
+					logs[last].style.backgroundColor = 'inherit';
+					logs[last].querySelector('ul').style.backgroundColor = 'inherit';
 				};
 				this.querySelector('ul').style.display = 'block';
 				this.style.backgroundColor = 'cadetblue';

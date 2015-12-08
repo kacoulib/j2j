@@ -5,13 +5,12 @@
 	*@param a: name
 	*@param b: value
 	*/
-	var removeClass = function (s,a,b)
+	var removeClass = function (a,b)
 	{
 		console.log(s);
-		var txt = '', name, s, val,
+		var txt = '', name, val,
 			browser  = ctx.getBrowserInfo(),		
-			selector = ctx.getSelector(s);
-			console.log('s====='+s);
+			selector = ctx.selector(s);
 			
 		var newArgs = [];			
 		for (var i = 1; i < arguments.length;  i++)
@@ -48,19 +47,17 @@
 			{ // to remove some Class or Tags classList ex: $('#test')||$('span').removeClass('tt','pp');
 				output += 'var elem = '+ selector.name+';\n'+
 						  'for (var k = 0; k < elem.length; k++){\n'+
-						  		'\telem[k]'+".classList.remove("+args+");"
+						  		'\telem[k]'+".classList.remove("+arguments[0]+");"
 						   +'\n}';
 			}
 			else
 			{ // remove an Id classList
-				output = selector.name+'.classList.remove('+args+');';
+				output = selector.name+'.classList.remove('+arguments[0]+');';
 			}
 	
 			txt = output;
 		};
 
-		ctx.toString += txt + "\r";
-		console.log(txt);
 		return txt;
 	};
 

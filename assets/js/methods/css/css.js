@@ -96,8 +96,7 @@
 		};
 		
 		
-		ctx.toString += txt + "\r";
-		return this;
+		return txt;
 	};
 
 	ctx.css = css;

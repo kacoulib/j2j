@@ -1,10 +1,10 @@
 (function (ctx)
 {
-	var addClass = function (s,a,b)
+	var addClass = function ()
 	{
-		var txt = '', name, s, val,
+		var txt = '', name, val,
 			browser  = ctx.getBrowserInfo(),		
-			selector = ctx.getSelector(s);
+			selector = ctx.selector;
 			
 		var newArgs = [];			
 		for (var i = 1; i < arguments.length;  i++)
@@ -30,22 +30,21 @@
 		
 		if (selector.type == 'tag' || selector.type == 'class')
 		{ // to add some Class or Tags classList ex: $('#test')||$('span').addClass('tt','pp');
-			output += 'var elem = '+ selector.name+';\n'+
-					  'for(var k = 0; k < elem.length; k++){\n'+
-					  		'\telem[k]'+".classList.add("+args+");"
+			output += 'var elem = '+ selector.name+', k;\n'+
+					  'for(k = 0; k < elem.length; k++){\n'+
+					  		'\telem[k]'+".classList.add("+arguments[0]+");"
 					   +'\n}';
 		}
 		else
 		{ // add an Id classList
-			output = selector.name+'.classList.add('+args+');';
+			output = selector.name+'.classList.add('+arguments[0]+');';
 		}
 		
 
 		txt = output;
 		
-		ctx.toString += txt + "\r";
 
-		return this;
+		return txt;
 	}
 	ctx.addClass = addClass;
 })(app)

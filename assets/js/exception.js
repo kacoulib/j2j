@@ -5,6 +5,11 @@ var msg = {
     console.log("%c"+title ,'padding: 0px 5px;border :1px dotted #1FDCDC;color:#009688',txt);
   },
 
+  info : function(title, txt)
+  {
+    console.log("%c"+title ,'padding: 0px 5px;border :1px dotted gray;color:gray',txt);
+  },
+
   warning : function(title, txt)
   {
     console.log("%c"+title ,'padding: 0px 5px;border :1px dotted red;color:orange',txt);
