@@ -20,7 +20,7 @@ var app =
 	code 		 : '',
 	codeSplit	 : [],
 
-	init: function(code)
+	init: function (code)
 	{
 		this.resetAll(); // reset all properties 
       	this.code = code;
@@ -36,7 +36,7 @@ var app =
 	/** 
 	* @Resume : loading animation
 	*/
-	animLoading: function()
+	animLoading: function ()
 	{
 		loading.style.width += (parseInt(loading.style.width)+10)+'px';
 		// console.log(loading.style.width);
@@ -45,26 +45,33 @@ var app =
 	/** 
 	 * @Resume : autoload the filed needeed depending on the script
 	*/
-	autoload: function (file)
+	autoload: function ()
 	{
-		if (file in this.implemant && this.fileLoaded.indexOf(file) < 0)
+		var i,
+		file;
+		
+		for (i = 0; i < this.toLoad.length; i++)
 		{
-			var script  = document.createElement('script');
-			script.type = 'text/javascript'; 
-			script.src  = 'assets/js/'+this.implemant[file].type+'/'+this.implemant[file].namespace+'/'+this.implemant[file].fileName+'.js';
-			script.async = true;
-			document.body.appendChild(script);
-			app.fileLoaded.push(file);
-			msg.sucess('autoload',file);
-			return;
-			
-		}
-		else
-		{
-			app.setHistoric('error','auto load',file);
-			msg.warning('autoload','erreur fichier .'+file+' deja été implemanté');
-			return;
-		}
+			file = this.toLoad[i].substring(1);
+			console.log(file)
+			if (file in this.implemant && this.fileLoaded.indexOf(file) < 0)
+			{
+				var script  = document.createElement('script');
+				script.type = 'text/javascript'; 
+				script.src  = 'assets/js/'+this.implemant[file].type+'/'+
+					this.implemant[file].namespace+'/'+this.implemant[file].fileName+'.js';
+				script.async = true;
+				document.body.appendChild(script);
+				app.fileLoaded.push(file);
+				msg.sucess('autoload',file);
+			}
+			else
+			{
+				app.setHistoric('error','auto load',file);
+				msg.warning('autoload','erreur fichier .'+file+' deja été implemanté');
+			}
+		};
+		return;
 	},
 
 	/** 
@@ -223,7 +230,7 @@ var app =
 	* @Resume : detect if there'is a chaining or not
 	* verify from an index if there's a '.Method' after a fucntion
 	*/
-	isChaining : function(i)
+	isChaining : function (i)
 	{
 		return /^\)(\s?)\.(\S)+\(/.test(this.code.substring(i));
 	},
@@ -232,7 +239,7 @@ var app =
 	* @Resume : add a piece of code before an action
 	* ex : if there's a chaining declar a varible(selector) to use
 	*/
-	insertBefor : function(code)
+	insertBefor : function (code)
 	{
 
 	},
@@ -241,7 +248,7 @@ var app =
 	* @Resume : add a piece of code after an action
 	* ex : if there's a chaining declar a varible(selector) to use
 	*/
-	insertAfter : function(code)
+	insertAfter : function (code)
 	{
 
 	},
@@ -251,14 +258,18 @@ var app =
 	*/
 	preLoad: function (file)
 	{
-		for (var key in this.implemant)
+		var patern = '.css|.addClass|.removeClass',
+		reg = new RegExp(patern, "g");
+		this.toLoad = this.code.match(reg);
+
+		if (this.toLoad.length > 0)
 		{
-			if (file.indexOf('.'+key) >= 0 && this.toLoad.indexOf(key) < 0)
-			{
-				this.toLoad.push(key);
-				this.autoload(key);
-			};
-		};
+			this.autoload();
+		}
+		else
+		{
+			msg.warning('sory but no method jquery found');
+		}
 	
 	},
 
@@ -275,11 +286,20 @@ var app =
 	/** 
 	 * @Resume : replace the jquery code by the native code
 	*/
-	replaceFrom : function(start, end, javascript)
+	replaceFrom : function (start, end, javascript)
 	{
 		var jquery = this.code.substring(start, end);
 		this. code = this.code.replace(jquery, javascript);
 		console.log(javascript);
+	},
+
+	/** 
+	 * @Resume : search any jquery code
+	  	ex: store they index in this.jqIndex
+	*/
+	searchJqIndex : function ()
+	{
+
 	},
 	/** 
 	 * @Resume : remove dash and uppercase the first caractere
@@ -338,7 +358,7 @@ var app =
 	 * @param start  (int) : the indexof to start ex:  code.indexOf('$("#test").addClass')
 	 * @param method  (str) : the name of the method ex(addClass) 
     */
-	scope: function(start,method)
+	scope: function (start,method)
 	{
 		msg.info('scope start at',start);
 		var rgx = new RegExp('\\$\\(.+\\).'+method),
@@ -347,7 +367,7 @@ var app =
 			bracketClose = 0,
 			splitStart = this.code.match(rgx), 
 			selector = splitStart[0].split('.'+method)[0],
-			param; // code :  le code a testé ex: $('test').addclass(fucntion(){}); (function(){})();
+			param; // code :  le code a testé ex: $('test').addclass(fucntion(){}); (function (){})();
 		this.code = this.code.substring(start);
 
 		if (splitStart == null) return;
