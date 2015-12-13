@@ -11,7 +11,9 @@ var app =
 	 * @var selector	 (obj) : show the name and the tranlating jquery selector
 	 * @var code		 (arr) : is the code to translate	
 	*/
-	implemant    : {'css':{'type' : 'methods','namespace' : 'css','fileName' : 'css'},'addClass':{'type' : 'methods','namespace' : 'css','fileName' : 'addClass'}, 'removeClass':{'type' : 'methods','namespace' : 'css','fileName' : 'removeClass'}},
+	implemant    : {'css':{'type' : 'methods','namespace' : 'css','fileName' : 'css'},
+					'addClass':{'type' : 'methods','namespace' : 'css','fileName' : 'addClass'}, 
+					'removeClass':{'type' : 'methods','namespace' : 'css','fileName' : 'removeClass'}},
 	notImplement : {},
 	declaredVar  : [],
 	toLoad		 : [],
@@ -26,11 +28,9 @@ var app =
       	this.code = code;
       	this.codeSplit = code.split('');
       	this.preLoad(code); // load all required files
-        this.scope(0,'addClass');
+        this.convert(0); // convert all jquery code to js
         this.getDeclaredVariables(code); // extract all variables
-        this.convert(code); // convert all jquery code to js
-        // console.log(this.getString());
-        return this.getString();
+        this.getString();
 	},
 
 	/** 
@@ -53,7 +53,6 @@ var app =
 		for (i = 0; i < this.toLoad.length; i++)
 		{
 			file = this.toLoad[i].substring(1);
-			console.log(file)
 			if (file in this.implemant && this.fileLoaded.indexOf(file) < 0)
 			{
 				var script  = document.createElement('script');
@@ -70,21 +69,38 @@ var app =
 				app.setHistoric('error','auto load',file);
 				msg.warning('autoload','erreur fichier .'+file+' deja été implemanté');
 			}
-		};
+		}
 		return;
 	},
 
 	/** 
-	 * @Resume : convert the jquery script
-
+	 * @Resume : search any jquery code depending of this.toLoad and convert it
+	  	ex: store they index in this.jqIndex
 	*/
-	convert: function (code)
+	convert : function (from)
 	{
-		this.declaredVar = [];
-		for (var i = 0; i < this.declaredVar.length; i++)
-		{
-		};
-			// console.log('convert');
+		var method = this.toLoad[1].slice(1),
+			rgx = new RegExp('\\$\\(.+\\).'+method),
+			splitStart = this.code.substring(from).match(rgx),
+			selector = splitStart[0].split('.'+method)[0] || '',
+			i = splitStart.index,
+			j, // scope return value
+			paramStart = splitStart.index + splitStart[0].length,
+			param;
+
+		(selector)? this.getSelector(selector) : '';
+
+
+		j = this.scope(paramStart);
+
+		console.log(this.code.length)
+		param = this.code.substring(paramStart + 1, j);
+		i += this.replaceFrom(i, j + 1, this[method](param));
+		if (this.isChaining(i))
+			console.log('chaining')
+		console.log(this.code.length)
+		this.toLoad.shift();
+		// return (this.toLoad.length > 0)? this.convert(i) : '';
 	},
 
 	
@@ -141,7 +157,7 @@ var app =
 	        	rgxMatch[i] = rgxMatch[i].split('var ')[1];
 	        	rgxNoExtra.push(rgxMatch[i].split(/[,;]/g)); // remove at all ;,var
 	        }
-		msg.table(rgxMatch);
+		// msg.table(rgxMatch);
 	        for (i = 0; i< rgxNoExtra.length; i++)
 	        {
 	            for (j = 0; j < rgxNoExtra[i].length; j++)
@@ -152,9 +168,9 @@ var app =
 	                rgxfinal = rgxNoExtra[i][j].split('='); // re-spit at the = to get keys. and values an justget ['t','0'] ['p'] ['ii','1']
 	                this.declaredVar.push(rgxfinal);
 	              }
-	            };
-	        };
-        msg.table(this.declaredVar);
+	            }
+	        }
+        // msg.table(this.declaredVar);
 
 		};
 		this.setHistoric('document','declared variable',this.declaredVar);
@@ -170,7 +186,6 @@ var app =
    	*/
 	getSelector: function (selec)
 	{
-		// console.log(selec);
 		selec = selec.slice(2, -1);
 		var s 		 		= /[:*,>+~\[=$^]/.test(selec);
 			s 				= (s == true ? s : (/(\S)+(\s)+(\S)/.test(selec)? true : selec[1]));
@@ -188,7 +203,7 @@ var app =
 			this.selector.name = selector;
 			this.selector.type = type;
 			return;
-		}; 
+		}
 		
 		if (s === '#')
 		{
@@ -232,23 +247,32 @@ var app =
 	*/
 	isChaining : function (i)
 	{
-		return /^\)(\s?)\.(\S)+\(/.test(this.code.substring(i));
+		return /^(\s?)+\.(\S)+\(/.test(this.code.substring(i));
 	},
 
 	/** 
-	* @Resume : add a piece of code before an action
-	* ex : if there's a chaining declar a varible(selector) to use
+	* @Resume : detect if the param is an variable
+	* verify from an declaredVar
 	*/
-	insertBefor : function (code)
+	isVarible : function (elem)
 	{
-
+		return (this.declaredVar.indexOf(elem) >= 0)? true : false;
 	},
 
 	/** 
 	* @Resume : add a piece of code after an action
 	* ex : if there's a chaining declar a varible(selector) to use
 	*/
-	insertAfter : function (code)
+	after : function (code)
+	{
+
+	},
+
+	/** 
+	* @Resume : add a piece of code before an action
+	* ex : if there's a chaining declar a varible(selector) to use
+	*/
+	befor : function (code)
 	{
 
 	},
@@ -289,18 +313,11 @@ var app =
 	replaceFrom : function (start, end, javascript)
 	{
 		var jquery = this.code.substring(start, end);
-		this. code = this.code.replace(jquery, javascript);
-		console.log(javascript);
+		this.code = this.code.replace(jquery, javascript);
+		return javascript.length;
 	},
 
-	/** 
-	 * @Resume : search any jquery code
-	  	ex: store they index in this.jqIndex
-	*/
-	searchJqIndex : function ()
-	{
 
-	},
 	/** 
 	 * @Resume : remove dash and uppercase the first caractere
 	  	ex: test-one => testOne 
@@ -317,13 +334,11 @@ var app =
 			for (i = 1; i < part.length; i++)
 			{
 				if (part[i] != 'undefined')
-				{
 					pp += part[i].charAt(0).toUpperCase()+part[i].slice(1);
-				};
-			};
+			}
 
 			return pp;
-		};
+		}
 
 		return elem;
 	},
@@ -358,40 +373,19 @@ var app =
 	 * @param start  (int) : the indexof to start ex:  code.indexOf('$("#test").addClass')
 	 * @param method  (str) : the name of the method ex(addClass) 
     */
-	scope: function (start,method)
+	scope: function (i)
 	{
-		msg.info('scope start at',start);
-		var rgx = new RegExp('\\$\\(.+\\).'+method),
-			i, 
-			bracketOpen = 0, 
-			bracketClose = 0,
-			splitStart = this.code.match(rgx), 
-			selector = splitStart[0].split('.'+method)[0],
-			param; // code :  le code a testé ex: $('test').addclass(fucntion(){}); (function (){})();
-		this.code = this.code.substring(start);
-
-		if (splitStart == null) return;
+		var	open = 0, 
+			close = 0;
 		
-		console.log(splitStart[0].length)
-		
-		for (i = splitStart.index + splitStart[0].length; i <= this.codeSplit.length; i++)
+		for (i; i <= this.code.length; i++)
 		{
-			if (this.codeSplit[i] == '(')
-			{
-			 	bracketOpen++;
-			}
-			if (this.codeSplit[i] == ')')
-			{
-			 	bracketClose++;
-			}
-			
-			if (bracketOpen == bracketClose && bracketOpen != 0)
-			{
-				this.getSelector(selector);
-				param = this.code.substring((splitStart.index + splitStart[0].length + 1), i);// get the method param
-				this.replaceFrom(splitStart.index, i + 1, this[method](param));
-				return (0);
-			};
-		};
+			if (this.code[i] == '(')
+			 	open++;
+			if (this.code[i] == ')')
+			 	close++;
+			if (open == close && open != 0)
+				return (i);
+		}
 	}
 };

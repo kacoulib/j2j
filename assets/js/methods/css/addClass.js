@@ -10,9 +10,7 @@
 		for (var i = 1; i < arguments.length;  i++)
 		{ //if  args containe an espace ex $(test).removeClass('tt pp   ')
 			if (arguments[i].length != 0 && !/(\s)/.test(arguments[i]))
-			{
 				newArgs.push(arguments[i]);
-			}
 		};
 
 		var output = '',args = '';
@@ -20,11 +18,8 @@
 		for (var i = 0; i < newArgs.length; i++)
 		{
 			
-			if (typeof newArgs[i] == 'function')
-			{ // if the param contain a function trow new exception
-				return console.log('desole mais il n\'est pas possible de placer une function en paramettre a cette function.  astuce: declarer une variable qui contiendra la valeur de la function avant de faire le add(maVariable). ou l\'erreur vient dailleur'
-				);
-			};
+			if (typeof newArgs[i] == 'function') // if the param contain a function trow new exception
+				return console.log('desole mais il n\'est pas possible de placer une function en paramettre a cette function.  astuce: declarer une variable qui contiendra la valeur de la function avant de faire le add(maVariable). ou l\'erreur vient dailleur');
 			args += (i !== (newArgs.length -1))? "'"+newArgs[i]+"'," : "'"+newArgs[i]+"'";
 		};
 		
