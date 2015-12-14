@@ -79,28 +79,35 @@ var app =
 	*/
 	convert : function (from)
 	{
-		var method = this.toLoad[1].slice(1),
+		if (this.toLoad.length < 1)
+			return;
+		var method = this.toLoad[0].slice(1),
 			rgx = new RegExp('\\$\\(.+\\).'+method),
-			splitStart = this.code.substring(from).match(rgx),
-			selector = splitStart[0].split('.'+method)[0] || '',
+			splitStart = this.code.substring(from).match(rgx);
+		
+		if (splitStart != null)
+		{
+			var selector =  splitStart[0].split('.'+method)[0],
 			i = splitStart.index,
 			j, // scope return value
 			paramStart = splitStart.index + splitStart[0].length,
 			param;
-
-		(selector)? this.getSelector(selector) : '';
-
+			this.getSelector(selector);
+		}
+		else
+		{
+			var i = from,
+			j, // scope return value
+			paramStart = i + method.length + 1,
+			param;
+		}
 
 		j = this.scope(paramStart);
-
-		console.log(this.code.length)
 		param = this.code.substring(paramStart + 1, j);
 		i += this.replaceFrom(i, j + 1, this[method](param));
-		if (this.isChaining(i))
-			console.log('chaining')
-		console.log(this.code.length)
 		this.toLoad.shift();
-		// return (this.toLoad.length > 0)? this.convert(i) : '';
+		console.log(i)
+		return this.convert(i);
 	},
 
 	
@@ -294,7 +301,6 @@ var app =
 		{
 			msg.warning('sory but no method jquery found');
 		}
-	
 	},
 
 	/** 
