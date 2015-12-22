@@ -1,11 +1,12 @@
 (function(ctx)
 {
-	var css = function (s,a,b)
+	var css = function (a,b)
 	{
-		console.log(s,a,b);
+		console.log('d =0 '+a,b);
 		var txt = '', name, s, val,
 			// selector = ctx.getSelector('this.selector'),
 			browser  = ctx.getBrowserInfo();
+			s = ctx.selector;
 
 		// define the black lists
 		this.blackList = function (selector,a)
@@ -95,7 +96,7 @@
 			}
 		};
 		
-		
+		console.log('txt ='+txt)
 		return txt;
 	};
 

@@ -1,3 +1,4 @@
+"use strict";
 var app = 
 {
 
@@ -20,15 +21,15 @@ var app =
 	fileLoaded	 : [],
 	selector 	 : {name : '', type : ''},
 	code 		 : '',
-	codeSplit	 : [],
+	codeSplited	 : [],
 
 	init: function (code)
 	{
 		this.resetAll(); // reset all properties 
       	this.code = code;
-      	this.codeSplit = code.split('');
       	this.preLoad(code); // load all required files
-        this.convert(0); // convert all jquery code to js
+        this.splitCode(0); // convert all jquery code to js
+        this.convert(); // convert all jquery code to js
         this.getDeclaredVariables(code); // extract all variables
         this.getString();
 	},
@@ -62,52 +63,28 @@ var app =
 				script.async = true;
 				document.body.appendChild(script);
 				app.fileLoaded.push(file);
-				msg.sucess('autoload',file);
+				// msg.sucess('autoload',file);
 			}
 			else
 			{
 				app.setHistoric('error','auto load',file);
-				msg.warning('autoload','erreur fichier .'+file+' deja été implemanté');
+				// msg.warning('autoload','erreur fichier .'+file+' deja été implemanté');
 			}
 		}
 		return;
 	},
 
 	/** 
-	 * @Resume : search any jquery code depending of this.toLoad and convert it
+	 * @Resume : convert the jquey method depending on this.codeSplited
 	  	ex: store they index in this.jqIndex
 	*/
-	convert : function (from)
+	convert : function ()
 	{
-		if (this.toLoad.length < 1)
-			return;
-		var method = this.toLoad[0].slice(1),
-			rgx = new RegExp('\\$\\(.+\\).'+method),
-			splitStart = this.code.substring(from).match(rgx);
-		
-		if (splitStart != null)
-		{
-			var selector =  splitStart[0].split('.'+method)[0],
-			i = splitStart.index,
-			j, // scope return value
-			paramStart = splitStart.index + splitStart[0].length,
-			param;
-			this.getSelector(selector);
-		}
-		else
-		{
-			var i = from,
-			j, // scope return value
-			paramStart = i + method.length + 1,
-			param;
-		}
-
-		j = this.scope(paramStart);
-		param = this.code.substring(paramStart + 1, j);
-		i += this.replaceFrom(i, j + 1, this[method](param));
-		this.toLoad.shift();
-		console.log(i)
-		return this.convert(i);
+		var i = this.codeSplited.length - 1;
+		var arr = this.codeSplited.reverse();
+		arr.map((x,a)=>{
+			console.log(a+' '+this[x['method']]())
+		})
 	},
 
 	
@@ -194,15 +171,13 @@ var app =
 	getSelector: function (selec)
 	{
 		selec = selec.slice(2, -1);
-		var s 		 		= /[:*,>+~\[=$^]/.test(selec);
-			s 				= (s == true ? s : (/(\S)+(\s)+(\S)/.test(selec)? true : selec[1]));
+		var s 		 		= /[:*,>+~\[=$^]/.test(selec),
 			name 	 		= selec.slice(1),
-			selector 		= '',
+			selector 		= 'document.',
 			selectorLength  = 0,
 			type 			= '';
 
-		// console.log('name='+selec);
-		selector = 'document.';
+		s = (s == true ? s : (/(\S)+(\s)+(\S)/.test(selec)? true : selec[1]));
 		if (s === true)
 		{// if it's a css quey selector ex p:first || p > .test 
 			type = 'tag';
@@ -249,12 +224,30 @@ var app =
 	},
 
 	/** 
+	* @Resume : detect if the string containe a function
+	* verify from an index if there's a function(){} or ()=> or x=>; after a fucntion
+	*/
+	hasFunction : function (param)
+	{
+		return /function(\s?)+\((.?)+\)(\s?)+\{|\((\S?)+(\s?)\)+(\s?)+(=>|\{)/.test(param);
+	},
+
+	/** 
 	* @Resume : detect if there'is a chaining or not
 	* verify from an index if there's a '.Method' after a fucntion
 	*/
 	isChaining : function (i)
 	{
 		return /^(\s?)+\.(\S)+\(/.test(this.code.substring(i));
+	},
+
+	/** 
+	* @Resume : detect if there'is a chaining or not
+	* verify from an index if there's a '.Method' after a fucntion
+	*/
+	isFunction : function (elem)
+	{
+		return /^(\s*)function(\s*)\((.*)\)(\s*)\{/.test(elem);
 	},
 
 	/** 
@@ -301,6 +294,7 @@ var app =
 		{
 			msg.warning('sory but no method jquery found');
 		}
+		msg.sucess('funded methods',this.toLoad)
 	},
 
 	/** 
@@ -309,8 +303,13 @@ var app =
 	*/
 	resetAll: function ()
 	{
-		this.toLoad = [];
-		this.declaredVar = [];
+		this.notImplement =  {};
+		this.declaredVar  =  [];
+		this.toLoad		 =  [];
+		this.fileLoaded	 =  [];
+		this.selector 	 =  {name : '', type : ''},
+		this.code 		 =  '';
+		this.codeSplited	 =  [];
 	},
 	
 	/** 
@@ -330,6 +329,8 @@ var app =
 	*/
 	setDashUcfirst: function (elem)
 	{
+		if (!(elem.indexOf('-') > -1)) return elem;
+
 		var part = elem.split('-'), pp, i;
 
 		// console.log('setDashUcfirst: '+elem);
@@ -345,7 +346,6 @@ var app =
 
 			return pp;
 		}
-
 		return elem;
 	},
 
@@ -374,24 +374,81 @@ var app =
 		// }
 	}, 
 
+
+    /** 
+	* @Resume : return the parameters as an array,
+   	*/
+	setParam: function (param)
+	{
+		var r;
+
+		if (this.hasFunction(param)) return param.split(',');
+		return r;
+	},
+
 	/** 
-	 * @Resume : parse the script to extract selector,method,param 
-	 * @param start  (int) : the indexof to start ex:  code.indexOf('$("#test").addClass')
-	 * @param method  (str) : the name of the method ex(addClass) 
+	 * @Resume : return the the starting and the ending index of a scope
+	 * @param  : a = first delimiter; b = second delimiter; i = index to start looking; exclude = word to exclude  
     */
-	scope: function (i)
+	scope: function (a, b, i, excludes)
 	{
 		var	open = 0, 
-			close = 0;
+			close = 0,
+			j = 0,
+			excludes = excludes | undefined;
 		
 		for (i; i <= this.code.length; i++)
 		{
-			if (this.code[i] == '(')
-			 	open++;
-			if (this.code[i] == ')')
-			 	close++;
-			if (open == close && open != 0)
-				return (i);
+			if (this.code[i] == excludes[j] && excludes[j + 1] != undefined)
+				(this.code[i + 1 ] == excludes[j + 1]) ? i++ : '';
+			if (this.code[i] == '(') open++;
+			if (this.code[i] == ')') close++;
+			if (open == close && open != 0) return (i);
 		}
+	},
+
+
+	/** 
+	 * @Resume : split the code depending on jquery code part 
+    */
+	splitCode: function (from)
+	{
+		if (this.toLoad.length < 1) return;
+		var method = this.toLoad[0].slice(1),
+			rgx = new RegExp('\\$\\(.+\\).'+method),
+			code = this.code.substring(from),
+			splitStart = code.match(rgx),
+			i = from,
+			param,
+			paramStart = ((this.isChaining(from))? (method.length + 1 + from) : (i + splitStart.index + splitStart[0].length)),
+			j, // scope end
+			o = {};
+
+		console.log(splitStart);
+		if (splitStart != null)
+		{
+			i = splitStart.index + from;
+			this.getSelector(splitStart[0].split('.'+method)[0]);
+		}
+
+		j = this.scope('(', ')', paramStart) + 1;
+		param = code.substring(paramStart - from + 1, j - from - 1);
+
+		(function(a,b)
+		{
+
+
+			o['method'] = method;
+			o['start'] = i;
+			o['end'] = j;
+			o['parm'] = param;
+			o['selector'] = {'name' : a, 'type' : b};
+		})(this.selector.name, this.selector.type)	
+		
+		
+		this.codeSplited.push(o);
+		this.toLoad.shift();
+		
+		return this.splitCode(j);
 	}
 };
