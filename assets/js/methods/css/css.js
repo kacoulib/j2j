@@ -38,7 +38,7 @@
 
 		if (typeof a == 'string')
 		{
-			a  = ctx.setDashUcfirst(a);
+			a  = ctx.camelCase(a);
 			val = b;
 			txt = s+'.style.'+a+' = "'+val+'";';
 
@@ -75,7 +75,7 @@
 
 				if (key)
 				{
-					key = ctx.setDashUcfirst(key);
+					key = ctx.camelCase(key);
 				};
 		
 				// if it's an array 

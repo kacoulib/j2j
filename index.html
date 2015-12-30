@@ -54,48 +54,49 @@
 			<li><a href="https://github.com/karim1412/j2j.git">github</a></li>
 		</ul>
 	</footer>
-</body>
 
 
-<!-- <script src="assets/js/jquery.min.js"></script> -->
-<script src="assets/js/animations.js"></script>
-<script src="assets/js/app.js"></script>
-<script src='assets/js/exception.js'></script>
-<script src='assets/js/methods/css/css.js'></script>
-<script src='assets/js/methods/css/addClass.js'></script>
-<script src='assets/js/methods/css/removeClass.js'></script>
-<script type="text/javascript">
-	  // initialise the aplication
-	   var code     = '',
-      text_jqu     = document.getElementById('text_jqu'),
-      text_jav     = document.getElementById('text_jav'),
-      submit       = document.getElementById('submit'),
-      test         = document.getElementById('test'),
-      jquSize      = '',
-      javSize;
+  <!-- <script src="assets/js/jquery.min.js"></script> -->
+  <script src="assets/js/animations.js"></script>
+  <script src="assets/js/jquery.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script src='assets/js/exception.js'></script>
+  <script src='assets/js/methods/css/css.js'></script>
+  <script src='assets/js/methods/css/addClass.js'></script>
+  <script src='assets/js/methods/css/removeClass.js'></script>
+  <script type="text/javascript">
+      // initialise the aplication
+       var code     = '',
+        text_jqu     = document.getElementById('text_jqu'),
+        text_jav     = document.getElementById('text_jav'),
+        submit       = document.getElementById('submit'),
+        test         = document.getElementById('test'),
+        jquSize      = '',
+        javSize;
 
 
-      window.alert = function(param){return console.log('alert => '+param);};
+        window.alert = function(param){return console.log('alert => '+param);};
 
-      
-
-      submit.onclick = function(e){
-        e.preventDefault();
-        code = text_jqu.value;
         
-        var result = app.init(code);
-        jquSize = String(code).length;
 
-      };
-      text_jqu.value = "var toto = 'bonjour toto', tata;\n $('#test').css('colo kjhdf df function(){}r','red');\n benjamein : larisne-power\n $('#test2').addClass('tt','red').removeClass('test0').addClass; hello";
+        submit.onclick = function(e){
+          e.preventDefault();
+          code = text_jqu.value;
+          
+          var result = app.init(code);
+          jquSize = String(code).length;
 
-      submit.click();
+        };
+        text_jqu.value = "var toto = 'bonjour toto', tata;\n $('#test').css('colo kjhdf df function(){}r','red');\n benjamein : larisne-power\n $('#test2').addClass('tt','red').removeClass('test0').addClass(''); hello";
 
-      // $('#test').removeClass('tr gg g ed');
+        submit.click();
 
-      // app.getString();
+        // $('#test').removeClass('tr gg g ed');
 
-      // var pp = $('#test'); 
-	
-</script>
+        // app.getString();
+
+        // var pp = $('#test'); 
+    
+  </script>
+</body>
 </html>

@@ -1,10 +1,5 @@
 (function (ctx)
 {
-	/*
-	*@param s: selector
-	*@param a: name
-	*@param b: value
-	*/
 	var removeClass = function (a,b)
 	{
 		var txt = '', name, val,

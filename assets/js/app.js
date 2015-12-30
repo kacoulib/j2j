@@ -29,7 +29,7 @@ var app =
       	this.code = code;
       	this.preLoad(code); // load all required files
         this.splitCode(0); // convert all jquery code to js
-        this.convert(); // convert all jquery code to js
+        // this.convert(); // convert all jquery code to js
         this.getDeclaredVariables(code); // extract all variables
         this.getString();
 	},
@@ -54,7 +54,7 @@ var app =
 		for (i = 0; i < this.toLoad.length; i++)
 		{
 			file = this.toLoad[i].substring(1);
-			if (file in this.implemant && this.fileLoaded.indexOf(file) < 0)
+			if (file in this.implemant && this.fileLoaded.indexOf(file) < 0 && !this[file])
 			{
 				var script  = document.createElement('script');
 				script.type = 'text/javascript'; 
@@ -75,15 +75,41 @@ var app =
 	},
 
 	/** 
+	 * @Resume : remove dash and uppercase the first caractere
+	  	ex: test-one => testOne 
+	*/
+	camelCase: function (elem)
+	{
+		if (!(elem.indexOf('-') > -1)) return elem;
+
+		var part = elem.split('-'), pp, i;
+
+		// console.log('camelCase: '+elem);
+		if (part.length != 1)
+		{
+			pp = part[0];
+
+			for (i = 1; i < part.length; i++)
+			{
+				if (part[i] != 'undefined')
+					pp += part[i].charAt(0).toUpperCase()+part[i].slice(1);
+			}
+
+			return pp;
+		}
+		return elem;
+	},
+
+	/** 
 	 * @Resume : convert the jquey method depending on this.codeSplited
 	  	ex: store they index in this.jqIndex
 	*/
-	convert : function ()
+	convert: function ()
 	{
 		var i = this.codeSplited.length - 1;
 		var arr = this.codeSplited.reverse();
-		arr.map((x,a)=>{
-			console.log(a+' '+this[x['method']]())
+		arr.map((x, a)=>{
+			console.log(a+'\n'+this[x['method']]())
 		})
 	},
 
@@ -227,7 +253,7 @@ var app =
 	* @Resume : detect if the string containe a function
 	* verify from an index if there's a function(){} or ()=> or x=>; after a fucntion
 	*/
-	hasFunction : function (param)
+	hasFunction: function (param)
 	{
 		return /function(\s?)+\((.?)+\)(\s?)+\{|\((\S?)+(\s?)\)+(\s?)+(=>|\{)/.test(param);
 	},
@@ -236,7 +262,7 @@ var app =
 	* @Resume : detect if there'is a chaining or not
 	* verify from an index if there's a '.Method' after a fucntion
 	*/
-	isChaining : function (i)
+	isChaining: function (i)
 	{
 		return /^(\s?)+\.(\S)+\(/.test(this.code.substring(i));
 	},
@@ -245,7 +271,7 @@ var app =
 	* @Resume : detect if there'is a chaining or not
 	* verify from an index if there's a '.Method' after a fucntion
 	*/
-	isFunction : function (elem)
+	isFunction: function (elem)
 	{
 		return /^(\s*)function(\s*)\((.*)\)(\s*)\{/.test(elem);
 	},
@@ -254,7 +280,7 @@ var app =
 	* @Resume : detect if the param is an variable
 	* verify from an declaredVar
 	*/
-	isVarible : function (elem)
+	isVarible: function (elem)
 	{
 		return (this.declaredVar.indexOf(elem) >= 0)? true : false;
 	},
@@ -263,7 +289,7 @@ var app =
 	* @Resume : add a piece of code after an action
 	* ex : if there's a chaining declar a varible(selector) to use
 	*/
-	after : function (code)
+	after: function (code)
 	{
 
 	},
@@ -272,7 +298,7 @@ var app =
 	* @Resume : add a piece of code before an action
 	* ex : if there's a chaining declar a varible(selector) to use
 	*/
-	befor : function (code)
+	befor: function (code)
 	{
 
 	},
@@ -315,7 +341,7 @@ var app =
 	/** 
 	 * @Resume : replace the jquery code by the native code
 	*/
-	replaceFrom : function (start, end, javascript)
+	replaceFrom: function (start, end, javascript)
 	{
 		var jquery = this.code.substring(start, end);
 		this.code = this.code.replace(jquery, javascript);
@@ -323,31 +349,6 @@ var app =
 	},
 
 
-	/** 
-	 * @Resume : remove dash and uppercase the first caractere
-	  	ex: test-one => testOne 
-	*/
-	setDashUcfirst: function (elem)
-	{
-		if (!(elem.indexOf('-') > -1)) return elem;
-
-		var part = elem.split('-'), pp, i;
-
-		// console.log('setDashUcfirst: '+elem);
-		if (part.length != 1)
-		{
-			pp = part[0];
-
-			for (i = 1; i < part.length; i++)
-			{
-				if (part[i] != 'undefined')
-					pp += part[i].charAt(0).toUpperCase()+part[i].slice(1);
-			}
-
-			return pp;
-		}
-		return elem;
-	},
 
 	/** 
 	 * @Resume : add to the the information in the Hitoric(debug) 
@@ -413,6 +414,7 @@ var app =
     */
 	splitCode: function (from)
 	{
+		console.log(this.toLoad.length)
 		if (this.toLoad.length < 1) return;
 		var method = this.toLoad[0].slice(1),
 			rgx = new RegExp('\\$\\(.+\\).'+method),
@@ -420,12 +422,16 @@ var app =
 			splitStart = code.match(rgx),
 			i = from,
 			param,
-			paramStart = ((this.isChaining(from))? (method.length + 1 + from) : (i + splitStart.index + splitStart[0].length)),
+			a = code.indexOf(splitStart),
+			b = (splitStart['input'] != null)? splitStart['input'].split('.'+method) : splitStart.split('.'+method) || null,
+
+			paramStart = ((this.isChaining(from))? (method.length + 1 + i) : (i + splitStart.index + splitStart[0].length)),
 			j, // scope end
 			o = {};
 
-		console.log(splitStart);
-		if (splitStart != null)
+		// console.log(splitStart);
+		console.log(b = code.substring(a).split('.'+method));
+		if (splitStart.index != null)
 		{
 			i = splitStart.index + from;
 			this.getSelector(splitStart[0].split('.'+method)[0]);
@@ -434,17 +440,14 @@ var app =
 		j = this.scope('(', ')', paramStart) + 1;
 		param = code.substring(paramStart - from + 1, j - from - 1);
 
-		(function(a,b)
+		(function (a,b)
 		{
-
-
-			o['method'] = method;
-			o['start'] = i;
 			o['end'] = j;
+			o['start'] = i;
 			o['parm'] = param;
+			o['method'] = method;
 			o['selector'] = {'name' : a, 'type' : b};
 		})(this.selector.name, this.selector.type)	
-		
 		
 		this.codeSplited.push(o);
 		this.toLoad.shift();
