@@ -1,1 +1,1 @@
-convert jquery to javascript
+convert jquery script to a native javascript script.
